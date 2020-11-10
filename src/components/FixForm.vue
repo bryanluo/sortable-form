@@ -133,23 +133,17 @@ export default {
     colDrag() {
       // 首先获取需要拖拽的dom节点
       const el1 = document.querySelector('.el-table__header-wrapper tr')
+      const _this = this
       Sortable.create(el1, {
         filter: '.no-drag',
         disabled: false, // 是否开启拖拽
         animation: 150, // 拖拽延时，效果更好看
         onEnd: (evt) => {
-          // let arr = this.dropCol; // 获取表数据
-          // arr.splice(e.newIndex, 0, arr.splice(e.oldIndex, 1)[0]); // 数据处理
-          // this.$nextTick(function () {
-          //   this.dropCol= arr;
-          // });
           const oindex = evt.oldIndex - 1;
-          const oldItem = this.dropCol[oindex]
-          this.dropCol.splice(oindex, 1)
-          this.dropCol.splice(evt.newIndex - 1, 0, oldItem)
-        },
-        onFilter: evt => {
-          console.log('evt:', evt)
+          const oldItem = _this.dropCol[oindex]
+          _this.dropCol.splice(oindex, 1)
+          _this.dropCol.splice(evt.newIndex - 1, 0, oldItem)
+          _this.$forceUpdate()
         }
       });
     },

@@ -1,21 +1,18 @@
 <template>
   <div id="app">
-    <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
-    <DragForm />
+    <FixForm />
   </div>
 </template>
 
 <script>
 //import HelloWorld from './components/HelloWorld.vue'
-//import FixForm from './components/FixForm'
-import DragForm from './components/DragForm'
+import FixForm from './components/FixForm'
 
 export default {
   name: 'App',
   components: {
     //HelloWorld,
-    //FixForm,
-    DragForm
+    FixForm
   }
 }
 </script>
