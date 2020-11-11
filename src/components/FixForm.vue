@@ -4,7 +4,8 @@
         :data="tableData"
         border
         align="left"
-        row-key="id">
+        row-key="id"
+        @header-dragend="moveHeaderSize" >
 
       <!-- 序号  -->
       <el-table-column
@@ -15,12 +16,13 @@
       </el-table-column>
 
       <!-- main table  -->
+      <template v-if="refresh">
       <el-table-column v-for="(item, index) in col"
                        :key="`col_${index}`"
                        :prop="dropCol[index].prop"
-                       :label="item.label">
+                       :label="item.label+item.size" :width="item.size">
       </el-table-column>
-
+      </template>
      <!-- 操作 -->
       <el-table-column
           fixed="right"
@@ -53,36 +55,44 @@
 <script>
 
 import Sortable from 'sortablejs'
+import { cloneDeep } from 'lodash'
 
 export default {
   data() {
     return {
+      refresh: true,
       col: [
         {
           label: '日期',
-          prop: 'date'
+          prop: 'date',
+          size:''
         },
         {
           label: '姓名',
-          prop: 'name'
+          prop: 'name',
+          size:''
         },
         {
           label: '地址',
-          prop: 'address'
+          prop: 'address',
+          size:''
         }
       ],
       dropCol: [
         {
           label: '日期',
-          prop: 'date'
+          prop: 'date',
+          size:''
         },
         {
           label: '姓名',
-          prop: 'name'
+          prop: 'name',
+          size:''
         },
         {
           label: '地址',
-          prop: 'address'
+          prop: 'address',
+          size:''
         }
       ],
       tableData: [
@@ -113,6 +123,17 @@ export default {
       ]
     }
   },
+  watch:{
+    dropCol:{
+      handler:function(val){
+        console.log(val)
+        this.$set(this.col, this.dropCol)
+        this.refresh = true
+        this.$message('hello');
+      },
+      deep:true
+    }
+  },
   mounted() {
     this.rowDrop()
     this.colDrag()
@@ -127,6 +148,7 @@ export default {
         onEnd({newIndex, oldIndex}) {
           const currRow = _this.tableData.splice(oldIndex, 1)[0]
           _this.tableData.splice(newIndex, 0, currRow)
+          _this.refresh = false
         }
       })
     },
@@ -142,10 +164,18 @@ export default {
           const oindex = evt.oldIndex - 1;
           const oldItem = _this.dropCol[oindex]
           _this.dropCol.splice(oindex, 1)
-          _this.dropCol.splice(evt.newIndex - 1, 0, oldItem)
-          _this.$forceUpdate()
+          _this.dropCol.splice(evt.newIndex - 1, 0, oldItem);
         }
       });
+    },
+    moveHeaderSize(newWidth, oldWidth, column) {
+      console.log('newWidth: ', newWidth, ', oldWidth: ', oldWidth)
+      this.dropCol.forEach(item => {
+        if (column.label === item.label) {
+          item.size = newWidth;
+        }
+      });
+      this.col = cloneDeep(this.dropCol)
     },
   }
 }
