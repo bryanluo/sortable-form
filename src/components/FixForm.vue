@@ -1,49 +1,23 @@
 <template>
   <div class="main">
-    <el-table
-        :data="tableData"
-        border
-        align="left"
-        row-key="id"
-        @header-dragend="moveHeaderSize" >
-
+    <el-table :data="tableData" border align="left" row-key="id" @header-dragend="moveHeaderSize" >
       <!-- 序号  -->
-      <el-table-column
-          fixed="left"
-          width="60px"
-          label="序号"
-          type="index" class-name="no-drag">
-      </el-table-column>
-
-      <!-- main table  -->
-      <template v-if="refresh">
-      <el-table-column v-for="(item, index) in col"
-                       :key="`col_${index}`"
-                       :prop="dropCol[index].prop"
-                       :label="item.label+item.size" :width="item.size">
-      </el-table-column>
-      </template>
+      <el-table-column  fixed="left" width="60px" label="序号" type="index" class-name="no-drag"></el-table-column>
+      <!-- 表头  -->
+      <el-table-column v-for="(item, index) in col"  :key="`col_${index}`" :prop="dropCol[index].prop" :label="item.label" :width="dropCol[index].size"></el-table-column>
      <!-- 操作 -->
-      <el-table-column
-          fixed="right"
-          class-name="no-drag"
-          label="操作"
-          width="100">
+      <el-table-column fixed="right" class-name="no-drag" label="操作" width="100">
         <template slot-scope="scope">
           <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
           <el-button type="text" size="small">编辑</el-button>
         </template>
       </el-table-column>
-
     </el-table>
-
     <!-- header list -->
     <pre style="text-align: left">
       {{ dropCol }}
     </pre>
-
     <hr>
-
     <!-- data list -->
     <pre style="text-align: left">
       {{ tableData }}
@@ -55,7 +29,6 @@
 <script>
 
 import Sortable from 'sortablejs'
-import { cloneDeep } from 'lodash'
 
 export default {
   data() {
@@ -65,34 +38,31 @@ export default {
         {
           label: '日期',
           prop: 'date',
-          size:''
         },
         {
           label: '姓名',
           prop: 'name',
-          size:''
         },
         {
           label: '地址',
           prop: 'address',
-          size:''
         }
       ],
       dropCol: [
         {
           label: '日期',
           prop: 'date',
-          size:''
+          size: 100
         },
         {
           label: '姓名',
           prop: 'name',
-          size:''
+          size: 100
         },
         {
           label: '地址',
           prop: 'address',
-          size:''
+          size: 500
         }
       ],
       tableData: [
@@ -123,17 +93,6 @@ export default {
       ]
     }
   },
-  watch:{
-    dropCol:{
-      handler:function(val){
-        console.log(val)
-        this.$set(this.col, this.dropCol)
-        this.refresh = true
-        this.$message('hello');
-      },
-      deep:true
-    }
-  },
   mounted() {
     this.rowDrop()
     this.colDrag()
@@ -148,7 +107,6 @@ export default {
         onEnd({newIndex, oldIndex}) {
           const currRow = _this.tableData.splice(oldIndex, 1)[0]
           _this.tableData.splice(newIndex, 0, currRow)
-          _this.refresh = false
         }
       })
     },
@@ -175,7 +133,6 @@ export default {
           item.size = newWidth;
         }
       });
-      this.col = cloneDeep(this.dropCol)
     },
   }
 }
