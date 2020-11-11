@@ -4,7 +4,7 @@
       <!-- 序号  -->
       <el-table-column  fixed="left" width="60px" label="序号" type="index" class-name="no-drag"></el-table-column>
       <!-- 表头  -->
-      <el-table-column v-for="(item, index) in col"  :key="`col_${index}`" :prop="dropCol[index].prop" :label="item.label" :width="dropCol[index].size"></el-table-column>
+      <el-table-column v-for="(item, index) in col"  :key="`col_${index}`" :prop="dropCol[index].prop" :label="item.label" :width="dropCol[index].size" class-name="drag"></el-table-column>
      <!-- 操作 -->
       <el-table-column fixed="right" class-name="no-drag" label="操作" width="100">
         <template slot-scope="scope">
@@ -116,13 +116,14 @@ export default {
       const _this = this
       Sortable.create(el1, {
         filter: '.no-drag',
+        draggable: 'drag',
         disabled: false, // 是否开启拖拽
         animation: 150, // 拖拽延时，效果更好看
         onEnd: (evt) => {
-          const oindex = evt.oldIndex - 1;
+          const oindex = evt.oldDraggableIndex
           const oldItem = _this.dropCol[oindex]
           _this.dropCol.splice(oindex, 1)
-          _this.dropCol.splice(evt.newIndex - 1, 0, oldItem);
+          _this.dropCol.splice(evt.newDraggableIndex, 0, oldItem)
         }
       });
     },
@@ -130,7 +131,7 @@ export default {
       console.log('newWidth: ', newWidth, ', oldWidth: ', oldWidth)
       this.dropCol.forEach(item => {
         if (column.label === item.label) {
-          item.size = newWidth;
+          item.size = newWidth
         }
       });
     },
