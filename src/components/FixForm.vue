@@ -1,14 +1,44 @@
 <template>
   <div class="main">
-    <el-table :data="tableData" border align="left" row-key="id" @header-dragend="moveHeaderSize" >
+    <el-button type="primary" icon="el-icon-download" @click="exportFile()"
+      >导出数据</el-button
+    >
+    <el-table
+      :data="tableData"
+      border
+      align="left"
+      row-key="id"
+      @header-dragend="moveHeaderSize"
+      id="formData"
+    >
       <!-- 序号  -->
-      <el-table-column  fixed="left" width="60px" label="序号" type="index" class-name="no-drag"></el-table-column>
+      <el-table-column
+        fixed="left"
+        width="60px"
+        label="序号"
+        type="index"
+        class-name="no-drag"
+      ></el-table-column>
       <!-- 表头  -->
-      <el-table-column v-for="(item, index) in col"  :key="`col_${index}`" :prop="dropCol[index].prop" :label="item.label" :width="dropCol[index].size" class-name="drag"></el-table-column>
-     <!-- 操作 -->
-      <el-table-column fixed="right" class-name="no-drag" label="操作" width="100">
+      <el-table-column
+        v-for="(item, index) in col"
+        :key="`col_${index}`"
+        :prop="dropCol[index].prop"
+        :label="item.label"
+        :width="dropCol[index].size"
+        class-name="drag"
+      ></el-table-column>
+      <!-- 操作 -->
+      <el-table-column
+        fixed="right"
+        class-name="no-drag"
+        label="操作"
+        width="100"
+      >
         <template slot-scope="scope">
-          <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
+          <el-button @click="handleClick(scope.row)" type="text" size="small"
+            >查看</el-button
+          >
           <el-button type="text" size="small">编辑</el-button>
         </template>
       </el-table-column>
@@ -17,18 +47,18 @@
     <pre style="text-align: left">
       {{ dropCol }}
     </pre>
-    <hr>
+    <hr />
     <!-- data list -->
     <pre style="text-align: left">
       {{ tableData }}
     </pre>
   </div>
-
 </template>
 
 <script>
-
-import Sortable from 'sortablejs'
+import Sortable from "sortablejs"
+import FileSaver from "file-saver"
+import xlsx from "xlsx"
 
 export default {
   data() {
@@ -36,107 +66,125 @@ export default {
       refresh: true,
       col: [
         {
-          label: '日期',
-          prop: 'date',
+          label: "日期",
+          prop: "date",
         },
         {
-          label: '姓名',
-          prop: 'name',
+          label: "姓名",
+          prop: "name",
         },
         {
-          label: '地址',
-          prop: 'address',
-        }
+          label: "地址",
+          prop: "address",
+        },
       ],
       dropCol: [
         {
-          label: '日期',
-          prop: 'date',
-          size: 100
+          label: "日期",
+          prop: "date",
+          size: 100,
         },
         {
-          label: '姓名',
-          prop: 'name',
-          size: 100
+          label: "姓名",
+          prop: "name",
+          size: 100,
         },
         {
-          label: '地址',
-          prop: 'address',
-          size: 500
-        }
+          label: "地址",
+          prop: "address",
+          size: 500,
+        },
       ],
       tableData: [
         {
-          id: '1',
-          date: '2016-05-02',
-          name: '王小虎1',
-          address: '上海市普陀区金沙江路 100 弄'
+          id: "1",
+          date: "2016-05-02",
+          name: "王小虎1",
+          address: "上海市普陀区金沙江路 100 弄",
         },
         {
-          id: '2',
-          date: '2016-05-04',
-          name: '王小虎2',
-          address: '上海市普陀区金沙江路 200 弄'
+          id: "2",
+          date: "2016-05-04",
+          name: "王小虎2",
+          address: "上海市普陀区金沙江路 200 弄",
         },
         {
-          id: '3',
-          date: '2016-05-01',
-          name: '王小虎3',
-          address: '上海市普陀区金沙江路 300 弄'
+          id: "3",
+          date: "2016-05-01",
+          name: "王小虎3",
+          address: "上海市普陀区金沙江路 300 弄",
         },
         {
-          id: '4',
-          date: '2016-05-03',
-          name: '王小虎4',
-          address: '上海市普陀区金沙江路 400 弄'
-        }
-      ]
-    }
+          id: "4",
+          date: "2016-05-03",
+          name: "王小虎4",
+          address: "上海市普陀区金沙江路 400 弄",
+        },
+      ],
+    };
   },
   mounted() {
-    this.rowDrop()
-    this.colDrag()
-  }
-  ,
+    this.rowDrop();
+    this.colDrag();
+  },
   methods: {
     //行拖拽
     rowDrop() {
-      const tbody = document.querySelector('.el-table__body-wrapper tbody')
-      const _this = this
+      const tbody = document.querySelector(".el-table__body-wrapper tbody");
+      const _this = this;
       Sortable.create(tbody, {
-        onEnd({newIndex, oldIndex}) {
-          const currRow = _this.tableData.splice(oldIndex, 1)[0]
-          _this.tableData.splice(newIndex, 0, currRow)
-        }
-      })
+        onEnd({ newIndex, oldIndex }) {
+          const currRow = _this.tableData.splice(oldIndex, 1)[0];
+          _this.tableData.splice(newIndex, 0, currRow);
+        },
+      });
     },
     colDrag() {
       // 首先获取需要拖拽的dom节点
-      const el1 = document.querySelector('.el-table__header-wrapper tr')
-      const _this = this
+      const el1 = document.querySelector(".el-table__header-wrapper tr");
+      const _this = this;
       Sortable.create(el1, {
-        filter: '.no-drag',
-        draggable: 'drag',
+        filter: ".no-drag",
+        draggable: "drag",
         disabled: false, // 是否开启拖拽
         animation: 150, // 拖拽延时，效果更好看
         onEnd: (evt) => {
-          const oindex = evt.oldDraggableIndex
-          const oldItem = _this.dropCol[oindex]
-          _this.dropCol.splice(oindex, 1)
-          _this.dropCol.splice(evt.newDraggableIndex, 0, oldItem)
-        }
+          const oindex = evt.oldDraggableIndex;
+          const oldItem = _this.dropCol[oindex];
+          _this.dropCol.splice(oindex, 1);
+          _this.dropCol.splice(evt.newDraggableIndex, 0, oldItem);
+        },
       });
     },
     moveHeaderSize(newWidth, oldWidth, column) {
-      console.log('newWidth: ', newWidth, ', oldWidth: ', oldWidth)
-      this.dropCol.forEach(item => {
+      console.log("newWidth: ", newWidth, ", oldWidth: ", oldWidth);
+      this.dropCol.forEach((item) => {
         if (column.label === item.label) {
-          item.size = newWidth
+          item.size = newWidth;
         }
       });
     },
-  }
-}
+    exportFile() {
+       let box = xlsx.utils.table_to_book(document.querySelector('#formData'))
+        let out = xlsx.write(box, {
+          bookType: 'xlsx',
+          bookSST: true,
+          type:"array"
+        })
+        try {
+          FileSaver.saveAs(
+            new Blob([out], {
+              type: 'application/octet-stream'
+            }),
+            'test.xlsx'
+          )
+        } catch (error) {
+          
+        }
+        return out
+    },
+  },
+};
 </script>
 
 <style>
